@@ -6,12 +6,14 @@ import (
 	"log"
 	"os"
 	auth "report/internal/authAmoCrm"
+	amocrm "report/internal/report_service/amocrm_service"
 	"time"
 )
 
 func main() {
 	baseURL := os.Getenv("AMOCRM")
 	loginURL := os.Getenv("AMOCRMURL")
+	accountsURL := os.Getenv("AMOCRM_ACCOUNTS_URL")
 
 	username := os.Getenv("AMO_LOGIN")
 	password := os.Getenv("AMO_PASSWORD")
@@ -21,9 +23,10 @@ func main() {
 	}
 
 	cfg := &auth.AmocrmConfig{
-		Timeout:  15 * time.Second,
-		BaseURL:  baseURL,
-		LoginUrl: loginURL,
+		Timeout:     15 * time.Second,
+		BaseURL:     baseURL,
+		LoginURL:    loginURL,
+		AccountsURL: accountsURL,
 	}
 
 	client, err := auth.NewAmocrmClient(cfg)
@@ -38,14 +41,31 @@ func main() {
 		log.Fatalf("ошибка GetCSRFtoken: %v", err)
 	}
 
-	fmt.Println("CSRF Token:", csrfToken)
-	fmt.Println("Cookies:", cookies)
+	fmt.Println("✅ CSRF Token:", csrfToken)
+	fmt.Println("✅ Cookies:", cookies)
 
 	token, newCookies, err := client.Login(ctx, username, password, csrfToken, cookies)
 	if err != nil {
 		log.Fatalf("ошибка Login: %v", err)
 	}
 
-	fmt.Println("Access Token:", token)
-	fmt.Println("New Cookies:", newCookies)
+	client.Cookies = newCookies
+	client.CsrfToken = csrfToken
+
+	fmt.Println("✅ Access Token:", token)
+	fmt.Println("✅ New Cookies:", newCookies)
+
+	service := amocrm.NewAmocrmService(client)
+
+	accounts, err := service.GetAccountsList(ctx)
+	if err != nil {
+		log.Fatalf("ошибка GetAccountsList: %v", err)
+	}
+
+	fmt.Println("=== ✅ Accounts List ===")
+	for _, acc := range accounts {
+		fmt.Printf("ID: %d | Name: %s | Domain: %s\n", acc.ID, acc.Name, acc.Domain)
+	}
+
+	
 }

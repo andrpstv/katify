@@ -6,78 +6,69 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"report/internal/models"
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
 )
 
-type AmocrmClient interface {
+type AmocrmClientMeth interface {
 	GetCSRFtoken(ctx context.Context) (CSRFtoken string, cookies []*http.Cookie, err error)
 	Login(ctx context.Context, login, password, CSRFtoken string, cookies []*http.Cookie) (token string, err error)
 }
 
-type amocrmClient struct {
-	cfg        *AmocrmConfig
-	httpClient *http.Client
-	csrfToken  string
-	cookies    []*http.Cookie
+type AmocrmClient struct {
+	Cfg        *AmocrmConfig
+	HttpClient *http.Client
+	CsrfToken  string
+	Cookies    []*http.Cookie
 }
 
 type AmocrmConfig struct {
-	Timeout  time.Duration
-	BaseURL  string
-	LoginUrl string
+	Timeout     time.Duration
+	BaseURL     string
+	LoginURL    string
+	AccountsURL string
 }
 
-func NewAmocrmClient(cfg *AmocrmConfig) (*amocrmClient, error) {
-	return &amocrmClient{
-		cfg: cfg,
-		httpClient: &http.Client{
+func NewAmocrmClient(cfg *AmocrmConfig) (*AmocrmClient, error) {
+	return &AmocrmClient{
+		Cfg: cfg,
+		HttpClient: &http.Client{
 			Timeout: cfg.Timeout,
 		},
 	}, nil
 }
 
-type AuthRequest struct {
-	Username  string `json:"username"`
-	Password  string `json:"password"`
-	CSRFToken string `json:"csrf_token"`
-}
-
-type AuthResponse struct {
-	AccessToken string         `json:"access_token"`
-	Cookies     []*http.Cookie `json:"cookies"`
-}
-
-func (a *amocrmClient) GetCSRFtoken(ctx context.Context) (CSRFToken string, cookies []*http.Cookie, err error) {
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, a.cfg.BaseURL, nil)
+func (a *AmocrmClient) GetCSRFtoken(ctx context.Context) (CSRFToken string, cookies []*http.Cookie, err error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, a.Cfg.BaseURL, nil)
 	if err != nil {
-		return "", nil, fmt.Errorf("error creating request to %s: %w", a.cfg.BaseURL, err)
+		return "", nil, fmt.Errorf("error creating request to %s: %w", a.Cfg.BaseURL, err)
 	}
-	resp, err := a.httpClient.Do(req)
+	resp, err := a.HttpClient.Do(req)
 	if err != nil {
-		return "", nil, fmt.Errorf("error sending request to %s: %w", a.cfg.BaseURL, err)
+		return "", nil, fmt.Errorf("error sending request to %s: %w", a.Cfg.BaseURL, err)
 	}
 	defer resp.Body.Close()
 
 	doc, err := goquery.NewDocumentFromReader(resp.Body)
 	if err != nil {
-		return "", nil, fmt.Errorf("error parsing HTML response from %s: %w", a.cfg.BaseURL, err)
+		return "", nil, fmt.Errorf("error parsing HTML response from %s: %w", a.Cfg.BaseURL, err)
 	}
 
 	val, exists := doc.Find(`input[name="csrf_token"]`).Attr("value")
 	if !exists {
-		return "", nil, fmt.Errorf("csrf_token input not found in HTML response from %s", a.cfg.BaseURL)
+		return "", nil, fmt.Errorf("csrf_token input not found in HTML response from %s", a.Cfg.BaseURL)
 	}
 
-	a.csrfToken = val
-	a.cookies = resp.Cookies()
+	a.CsrfToken = val
+	a.Cookies = resp.Cookies()
 
 	return val, resp.Cookies(), nil
 }
 
-func (a *amocrmClient) Login(ctx context.Context, username, password, csrfToken string, cookies []*http.Cookie) (string, []*http.Cookie, error) {
-	reqBody := AuthRequest{
+func (a *AmocrmClient) Login(ctx context.Context, username, password, csrfToken string, cookies []*http.Cookie) (string, []*http.Cookie, error) {
+	reqBody := models.AuthRequest{
 		Username:  username,
 		Password:  password,
 		CSRFToken: csrfToken,
@@ -88,9 +79,9 @@ func (a *amocrmClient) Login(ctx context.Context, username, password, csrfToken 
 		return "", nil, fmt.Errorf("error marshaling auth request: %w", err)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, a.cfg.LoginUrl, bytes.NewBuffer(bodyBytes))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, a.Cfg.LoginURL, bytes.NewBuffer(bodyBytes))
 	if err != nil {
-		return "", nil, fmt.Errorf("error creating request to %s: %w", a.cfg.LoginUrl, err)
+		return "", nil, fmt.Errorf("error creating request to %s: %w", a.Cfg.LoginURL, err)
 	}
 
 	req.Header.Set("Content-Type", "application/json")
@@ -99,13 +90,13 @@ func (a *amocrmClient) Login(ctx context.Context, username, password, csrfToken 
 		req.AddCookie(c)
 	}
 
-	resp, err := a.httpClient.Do(req)
+	resp, err := a.HttpClient.Do(req)
 	if err != nil {
 		return "", nil, fmt.Errorf("error sending login request: %w", err)
 	}
 	defer resp.Body.Close()
 
-	var authResp AuthResponse
+	var authResp models.AuthResponse
 	if err := json.NewDecoder(resp.Body).Decode(&authResp); err != nil {
 		return "", nil, fmt.Errorf("error decoding login response: %w", err)
 	}
