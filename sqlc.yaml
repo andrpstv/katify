@@ -1,0 +1,11 @@
+version: "2"
+sql:
+  - schema: "migrations"
+    queries: "sqlc/queries/auth"
+    engine: "postgresql"
+    gen:
+      go:
+        out: "internal/adapters/postgres/auth"
+        package: "authrepo"
+        emit_json_tags: true
+        emit_interface: true
