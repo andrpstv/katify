@@ -13,14 +13,14 @@ import (
 )
 
 type AmoAuthClientImpl struct {
-	Cfg    *AuthConfig
+	Cfg    *AmoAuthConfig
 	client portsClient.HTTPClient
 	parser portsParser.AuthParserService
 	mapper portsMapper.AuthMapperService
 }
 
 func NewAmocrmAuthClientImpl(
-	cfg *AuthConfig,
+	cfg *AmoAuthConfig,
 	httpClient portsClient.HTTPClient,
 	parser portsParser.AuthParserService,
 	mapper portsMapper.AuthMapperService,

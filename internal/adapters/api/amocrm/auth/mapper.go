@@ -1,11 +1,25 @@
 package adapters
 
 import (
+	"fmt"
+
 	domain "report/internal/domain/auth"
 	dto "report/internal/dto/auth"
 )
 
-type AuthMapperServiceImpl struct{}
+type AmoAuthMapperServiceImpl struct{}
 
-func MapAuthDataToDomain(*dto.AuthData) (*domain.AccountData, error) {
+func MapAuthDataToDomain(dto *dto.AuthData) (*domain.AccountData, error) {
+	if dto.AccessToken == "" {
+		return nil, fmt.Errorf("missing access token")
+	}
+
+	return &domain.AccountData{
+		UserID:       dto.ID,
+		Name:         dto.Name,
+		Email:        dto.Email,
+		AccessToken:  dto.AccessToken,
+		RefreshToken: dto.RefreshToken,
+		ExpiresAt:    dto.ExpiresAt,
+	}, nil
 }

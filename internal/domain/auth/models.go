@@ -1,8 +1,14 @@
 package domain
 
-import "net/http"
+import "time"
 
 type AccountData struct {
-	Token   string
-	Cookies []*http.Cookie
+	UserID       string
+	Email        string
+	Name         string
+	AccessToken  string
+	RefreshToken string
+	ExpiresAt    time.Time
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
 }

@@ -2,7 +2,7 @@ package adapters
 
 import "time"
 
-type AuthConfig struct {
+type AmoAuthConfig struct {
 	Timeout     time.Duration
 	BaseURL     string
 	LoginURL    string

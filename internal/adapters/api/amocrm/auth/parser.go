@@ -2,18 +2,21 @@ package adapters
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
+	"net/url"
+	"strconv"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
 
 	dto "report/internal/dto/auth"
 )
 
-type AuthParserServiceImpl struct{}
+type AmoAuthParserServiceImpl struct{}
 
-func (p *AuthParserServiceImpl) ParseCSRF(html *http.Response) (string, error) {
+func (p *AmoAuthParserServiceImpl) ParseCSRF(html *http.Response) (string, error) {
 	doc, err := goquery.NewDocumentFromReader(html.Body)
 	if err != nil {
 		return "", fmt.Errorf("error parsing HTML response from %s: %w", html.Body, err)
@@ -30,14 +33,57 @@ func (p *AuthParserServiceImpl) ParseCSRF(html *http.Response) (string, error) {
 	return token, nil
 }
 
-func (p *AuthParserServiceImpl) DecodeAuthData(
+func (p *AmoAuthParserServiceImpl) DecodeAuthData(
 	ctx context.Context,
 	resp *http.Response,
 ) (*dto.AuthData, error) {
-	authResp := &dto.AuthData{}
-	if err := json.NewDecoder(resp.Body).Decode(authResp); err != nil {
-		return nil, fmt.Errorf("error decoding login response: %w", err)
+	if resp != nil && resp.Body != nil {
+		defer resp.Body.Close()
 	}
-	authResp.Cookies = resp.Cookies()
+
+	if resp.StatusCode < 200 || resp.StatusCode >= 400 {
+		body, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("unexpected status %d: %s", resp.StatusCode, string(body))
+	}
+
+	authResp := &dto.AuthData{
+		Cookies: resp.Cookies(),
+	}
+
+	for _, cookie := range authResp.Cookies {
+		switch cookie.Name {
+		case "access_token":
+			authResp.AccessToken = cookie.Value
+		case "refresh_token":
+			authResp.RefreshToken = cookie.Value
+		case "access_token_expires_at":
+			ts, err := strconv.ParseInt(cookie.Value, 10, 64)
+			if err != nil {
+				return nil, fmt.Errorf("invalid access_token_expires_at value: %v", err)
+			}
+			authResp.ExpiresAt = time.Unix(ts, 0).UTC()
+		case "amo_user_id":
+			authResp.ID = cookie.Value
+		case "amo_user_full_name":
+			if v, err := url.QueryUnescape(cookie.Value); err == nil {
+				authResp.Name = v
+			} else {
+				authResp.Name = cookie.Value
+			}
+		case "amo_user_email":
+			authResp.Email = cookie.Value
+		}
+	}
+
+	if authResp.AccessToken == "" {
+		return nil, fmt.Errorf("auth failed: no access_token found in cookies")
+	}
+	if authResp.ID == "" {
+		return nil, fmt.Errorf("auth failed: amo_user_id not found in cookies")
+	}
+	if authResp.Email == "" {
+		return nil, fmt.Errorf("auth warning: amo_user_email not found in cookies")
+	}
+
 	return authResp, nil
 }

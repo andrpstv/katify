@@ -2,13 +2,19 @@ package dto
 
 import (
 	"net/http"
+	"time"
 
 	domain "report/internal/domain/accounts"
 )
 
 type AuthData struct {
-	Token   string
-	Cookies []*http.Cookie
+	ID           string
+	Email        string
+	Name         string
+	AccessToken  string
+	RefreshToken string
+	ExpiresAt    time.Time
+	Cookies      []*http.Cookie
 }
 
 func (a *AuthData) toModel(data *AuthData) domain.Account {

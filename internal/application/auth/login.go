@@ -12,24 +12,25 @@ import (
 )
 
 type AuthUseCaseImpl struct {
-	auth   portsClient.AuthClient
-	parser portsParser.AuthParserService
-	mapper portsMapper.AuthMapperService
+	authClient portsClient.AuthClient
+	parser     portsParser.AuthParserService
+	mapper     portsMapper.AuthMapperService
 }
 
-func (l *AuthUseCaseImpl) Login(
+func (a *AuthUseCaseImpl) Login(
 	ctx context.Context,
 	data *dto.AuthRequest,
 ) (*domain.AccountData, error) {
-	resp, err := l.auth.Login(ctx, data)
+	resp, err := a.authClient.Login(ctx, data)
 	if err != nil {
 		fmt.Errorf("can't authorize in account with creds", err)
 	}
 
-	authData, err := l.parser.DecodeAuthData(resp)
+	authData, err := a.parser.DecodeAuthData(resp)
 	if err != nil {
 		return nil, fmt.Errorf("can't parse authdata:", err)
 	}
 
-	return l.mapper.MapAuthDataToDomain(authData)
+	// дополнить запись в бд
+	return a.mapper.MapAuthDataToDomain(authData)
 }
