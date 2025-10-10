@@ -7,8 +7,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"report/internal/domain"
-	ports "report/internal/ports/outboundPorts/api/services/amocrm/auth"
+	domain "report/internal/domain/auth"
 	sqlc "report/sqlc/repository/auth" // путь к сгенерированному sqlc-пакету; поправьте по модулю
 )
 
@@ -16,7 +15,7 @@ type authRepository struct {
 	querier sqlc.Querier // сгенерированный интерфейс (emit_interface: true)
 }
 
-func New(querier sqlc.Querier) ports.Repository {
+func New(querier sqlc.Querier) *authRepository {
 	return &authRepository{querier: querier}
 }
 

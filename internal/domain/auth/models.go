@@ -3,7 +3,7 @@ package domain
 import "time"
 
 type AccountData struct {
-	UserID       string
+	AmoUserID    string
 	Email        string
 	Name         string
 	AccessToken  string

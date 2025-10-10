@@ -15,7 +15,7 @@ func MapAuthDataToDomain(dto *dto.AuthData) (*domain.AccountData, error) {
 	}
 
 	return &domain.AccountData{
-		UserID:       dto.ID,
+		AmoUserID:    dto.ID,
 		Name:         dto.Name,
 		Email:        dto.Email,
 		AccessToken:  dto.AccessToken,
