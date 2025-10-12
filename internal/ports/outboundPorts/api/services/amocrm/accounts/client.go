@@ -3,12 +3,12 @@ package ports
 import (
 	"context"
 
-	domain "report/internal/domain/auth"
+	domain "report/internal/domain/accounts"
 )
 
 type AmoAccountClient interface {
-	FetchProjects(
+	FetchAccounts(
 		ctx context.Context,
 		token string,
-	) (*domain.AccountInfo, error)
+	) (*domain.Account, error)
 }

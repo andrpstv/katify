@@ -3,8 +3,6 @@ package dto
 import (
 	"net/http"
 	"time"
-
-	domain "report/internal/domain/accounts"
 )
 
 type AuthData struct {
@@ -17,9 +15,20 @@ type AuthData struct {
 	Cookies      []*http.Cookie
 }
 
-func (a *AuthData) toModel(data *AuthData) domain.Account {
-	accountInfo := domain.Account{}
-}
+// func (a *AuthData) ToDomain() domain.Account {
+// 	if a == nil {
+// 		return domain.Account{}
+// 	}
+// 	return domain.Account{
+// 		ID:           a.ID,
+// 		Email:        a.Email,
+// 		Name:         a.Name,
+// 		AccessToken:  a.AccessToken,
+// 		RefreshToken: a.RefreshToken,
+// 		ExpiresAt:    a.ExpiresAt,
+// 		Cookies:      a.Cookies, // если domain.Account.Cookies имеет тот же тип
+// 	}
+// }
 
 type AuthRequest struct {
 	Username string `json:"username"`

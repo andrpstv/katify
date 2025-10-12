@@ -8,11 +8,11 @@ import (
 	"github.com/google/uuid"
 
 	domain "report/internal/domain/auth"
-	sqlc "report/sqlc/repository/auth" // путь к сгенерированному sqlc-пакету; поправьте по модулю
+	sqlc "report/sqlc/repository/auth"
 )
 
 type authRepository struct {
-	querier sqlc.Querier // сгенерированный интерфейс (emit_interface: true)
+	querier sqlc.Querier
 }
 
 func New(querier sqlc.Querier) *authRepository {

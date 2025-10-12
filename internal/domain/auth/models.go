@@ -6,6 +6,8 @@ type AccountData struct {
 	AmoUserID    string
 	Email        string
 	Name         string
+	Login        string
+	Password     string
 	AccessToken  string
 	RefreshToken string
 	ExpiresAt    time.Time

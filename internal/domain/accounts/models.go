@@ -1,8 +1,9 @@
 package domain
 
 type Account struct {
-	ID       int
+	ID       string
 	Name     string
+	Email    string
 	Projects []Project
 	Data     AccountData
 }

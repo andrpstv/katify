@@ -11,10 +11,13 @@ import (
 )
 
 type Querier interface {
-	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
-	GetUserByAmoID(ctx context.Context, amoUserID string) (User, error)
-	GetUserByID(ctx context.Context, id uuid.UUID) (User, error)
-	UpdateUserTokens(ctx context.Context, arg UpdateUserTokensParams) error
+	// Создание аккаунта пользователя в внешнем сервисе
+	CreateAccount(ctx context.Context, arg CreateAccountParams) (uuid.UUID, error)
+	// Создание токенов для этого аккаунта
+	CreateAccountCredentials(ctx context.Context, arg CreateAccountCredentialsParams) error
+	GetAccountByProviderUserID(ctx context.Context, arg GetAccountByProviderUserIDParams) (GetAccountByProviderUserIDRow, error)
+	GetAccountsByUser(ctx context.Context, userID uuid.UUID) ([]GetAccountsByUserRow, error)
+	UpdateAccountTokens(ctx context.Context, arg UpdateAccountTokensParams) error
 }
 
 var _ Querier = (*Queries)(nil)

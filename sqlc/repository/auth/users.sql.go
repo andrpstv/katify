@@ -13,103 +13,170 @@ import (
 	"github.com/google/uuid"
 )
 
-const createUser = `-- name: CreateUser :one
-INSERT INTO users (amo_user_id, name, email, access_token, refresh_token, expires_at)
-VALUES ($1, $2, $3, $4, $5, $6)
-RETURNING id, amo_user_id, name, email, access_token, refresh_token, expires_at, created_at, updated_at
+const createAccount = `-- name: CreateAccount :one
+INSERT INTO accounts (user_id, provider_id, provider_user_id, display_name, email)
+VALUES ($1, $2, $3, $4, $5)
+RETURNING id
 `
 
-type CreateUserParams struct {
-	AmoUserID    string         `json:"amo_user_id"`
-	Name         sql.NullString `json:"name"`
-	Email        sql.NullString `json:"email"`
-	AccessToken  string         `json:"access_token"`
-	RefreshToken string         `json:"refresh_token"`
-	ExpiresAt    time.Time      `json:"expires_at"`
+type CreateAccountParams struct {
+	UserID         uuid.UUID      `json:"user_id"`
+	ProviderID     int32          `json:"provider_id"`
+	ProviderUserID string         `json:"provider_user_id"`
+	DisplayName    sql.NullString `json:"display_name"`
+	Email          sql.NullString `json:"email"`
 }
 
-func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
-	row := q.db.QueryRowContext(ctx, createUser,
-		arg.AmoUserID,
-		arg.Name,
+// Создание аккаунта пользователя в внешнем сервисе
+func (q *Queries) CreateAccount(ctx context.Context, arg CreateAccountParams) (uuid.UUID, error) {
+	row := q.db.QueryRowContext(ctx, createAccount,
+		arg.UserID,
+		arg.ProviderID,
+		arg.ProviderUserID,
+		arg.DisplayName,
 		arg.Email,
-		arg.AccessToken,
-		arg.RefreshToken,
-		arg.ExpiresAt,
 	)
-	var i User
-	err := row.Scan(
-		&i.ID,
-		&i.AmoUserID,
-		&i.Name,
-		&i.Email,
-		&i.AccessToken,
-		&i.RefreshToken,
-		&i.ExpiresAt,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return i, err
+	var id uuid.UUID
+	err := row.Scan(&id)
+	return id, err
 }
 
-const getUserByAmoID = `-- name: GetUserByAmoID :one
-SELECT id, amo_user_id, name, email, access_token, refresh_token, expires_at, created_at, updated_at FROM users WHERE amo_user_id = $1
+const createAccountCredentials = `-- name: CreateAccountCredentials :exec
+INSERT INTO accounts_credentials (account_id, access_token, refresh_token, expires_at)
+VALUES ($1, $2, $3, $4)
 `
 
-func (q *Queries) GetUserByAmoID(ctx context.Context, amoUserID string) (User, error) {
-	row := q.db.QueryRowContext(ctx, getUserByAmoID, amoUserID)
-	var i User
-	err := row.Scan(
-		&i.ID,
-		&i.AmoUserID,
-		&i.Name,
-		&i.Email,
-		&i.AccessToken,
-		&i.RefreshToken,
-		&i.ExpiresAt,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return i, err
-}
-
-const getUserByID = `-- name: GetUserByID :one
-SELECT id, amo_user_id, name, email, access_token, refresh_token, expires_at, created_at, updated_at FROM users WHERE id = $1
-`
-
-func (q *Queries) GetUserByID(ctx context.Context, id uuid.UUID) (User, error) {
-	row := q.db.QueryRowContext(ctx, getUserByID, id)
-	var i User
-	err := row.Scan(
-		&i.ID,
-		&i.AmoUserID,
-		&i.Name,
-		&i.Email,
-		&i.AccessToken,
-		&i.RefreshToken,
-		&i.ExpiresAt,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return i, err
-}
-
-const updateUserTokens = `-- name: UpdateUserTokens :exec
-UPDATE users
-SET access_token = $2, refresh_token = $3, expires_at = $4, updated_at = NOW()
-WHERE id = $1
-`
-
-type UpdateUserTokensParams struct {
-	ID           uuid.UUID `json:"id"`
+type CreateAccountCredentialsParams struct {
+	AccountID    uuid.UUID `json:"account_id"`
 	AccessToken  string    `json:"access_token"`
 	RefreshToken string    `json:"refresh_token"`
 	ExpiresAt    time.Time `json:"expires_at"`
 }
 
-func (q *Queries) UpdateUserTokens(ctx context.Context, arg UpdateUserTokensParams) error {
-	_, err := q.db.ExecContext(ctx, updateUserTokens,
-		arg.ID,
+// Создание токенов для этого аккаунта
+func (q *Queries) CreateAccountCredentials(ctx context.Context, arg CreateAccountCredentialsParams) error {
+	_, err := q.db.ExecContext(ctx, createAccountCredentials,
+		arg.AccountID,
+		arg.AccessToken,
+		arg.RefreshToken,
+		arg.ExpiresAt,
+	)
+	return err
+}
+
+const getAccountByProviderUserID = `-- name: GetAccountByProviderUserID :one
+SELECT a.id, a.user_id, a.provider_id, a.provider_user_id, a.display_name, a.email,
+       ac.access_token, ac.refresh_token, ac.expires_at
+FROM accounts a
+LEFT JOIN accounts_credentials ac ON a.id = ac.account_id
+WHERE a.provider_id = (SELECT id FROM external_providers WHERE service = $1)
+  AND a.provider_user_id = $2
+`
+
+type GetAccountByProviderUserIDParams struct {
+	Service        string `json:"service"`
+	ProviderUserID string `json:"provider_user_id"`
+}
+
+type GetAccountByProviderUserIDRow struct {
+	ID             uuid.UUID      `json:"id"`
+	UserID         uuid.UUID      `json:"user_id"`
+	ProviderID     int32          `json:"provider_id"`
+	ProviderUserID string         `json:"provider_user_id"`
+	DisplayName    sql.NullString `json:"display_name"`
+	Email          sql.NullString `json:"email"`
+	AccessToken    sql.NullString `json:"access_token"`
+	RefreshToken   sql.NullString `json:"refresh_token"`
+	ExpiresAt      sql.NullTime   `json:"expires_at"`
+}
+
+func (q *Queries) GetAccountByProviderUserID(ctx context.Context, arg GetAccountByProviderUserIDParams) (GetAccountByProviderUserIDRow, error) {
+	row := q.db.QueryRowContext(ctx, getAccountByProviderUserID, arg.Service, arg.ProviderUserID)
+	var i GetAccountByProviderUserIDRow
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.ProviderID,
+		&i.ProviderUserID,
+		&i.DisplayName,
+		&i.Email,
+		&i.AccessToken,
+		&i.RefreshToken,
+		&i.ExpiresAt,
+	)
+	return i, err
+}
+
+const getAccountsByUser = `-- name: GetAccountsByUser :many
+SELECT a.id, a.provider_id, a.provider_user_id, a.display_name, a.email,
+       ac.access_token, ac.refresh_token, ac.expires_at
+FROM accounts a
+LEFT JOIN accounts_credentials ac ON a.id = ac.account_id
+WHERE a.user_id = $1
+`
+
+type GetAccountsByUserRow struct {
+	ID             uuid.UUID      `json:"id"`
+	ProviderID     int32          `json:"provider_id"`
+	ProviderUserID string         `json:"provider_user_id"`
+	DisplayName    sql.NullString `json:"display_name"`
+	Email          sql.NullString `json:"email"`
+	AccessToken    sql.NullString `json:"access_token"`
+	RefreshToken   sql.NullString `json:"refresh_token"`
+	ExpiresAt      sql.NullTime   `json:"expires_at"`
+}
+
+func (q *Queries) GetAccountsByUser(ctx context.Context, userID uuid.UUID) ([]GetAccountsByUserRow, error) {
+	rows, err := q.db.QueryContext(ctx, getAccountsByUser, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetAccountsByUserRow
+	for rows.Next() {
+		var i GetAccountsByUserRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.ProviderID,
+			&i.ProviderUserID,
+			&i.DisplayName,
+			&i.Email,
+			&i.AccessToken,
+			&i.RefreshToken,
+			&i.ExpiresAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const updateAccountTokens = `-- name: UpdateAccountTokens :exec
+UPDATE accounts_credentials
+SET access_token = $2,
+    refresh_token = $3,
+    expires_at = $4,
+    updated_at = NOW()
+WHERE account_id = $1
+`
+
+type UpdateAccountTokensParams struct {
+	AccountID    uuid.UUID `json:"account_id"`
+	AccessToken  string    `json:"access_token"`
+	RefreshToken string    `json:"refresh_token"`
+	ExpiresAt    time.Time `json:"expires_at"`
+}
+
+func (q *Queries) UpdateAccountTokens(ctx context.Context, arg UpdateAccountTokensParams) error {
+	_, err := q.db.ExecContext(ctx, updateAccountTokens,
+		arg.AccountID,
 		arg.AccessToken,
 		arg.RefreshToken,
 		arg.ExpiresAt,

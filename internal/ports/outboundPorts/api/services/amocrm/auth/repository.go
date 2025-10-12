@@ -6,7 +6,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"report/internal/domain"
+	domain "report/internal/domain/auth"
 )
 
 type Repository interface {

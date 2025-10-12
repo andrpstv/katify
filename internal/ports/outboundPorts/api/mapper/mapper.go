@@ -14,5 +14,5 @@ type AuthMapperService interface {
 type AccountMapperService interface {
 	MapAccountDataToDomain(
 		*dto.AuthData,
-	) (*domain.AccountInfo, error)
+	) (*domain.AccountData, error)
 }

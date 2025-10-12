@@ -13,6 +13,7 @@ type AuthUseCase interface {
 		data *dto.AuthRequest,
 	) (*domain.AccountData, error)
 }
-type TokenProvider interface {
-	ValidateToken(ctx, accountID string) (domain.Token, error)
-}
+
+// type TokenProvider interface {
+// 	ValidateToken(ctx, accountID string) (domain.Token, error)
+// }
