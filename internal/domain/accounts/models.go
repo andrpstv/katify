@@ -1,5 +1,7 @@
 package domain
 
+import "time"
+
 type Account struct {
 	ID       string
 	Name     string
@@ -23,4 +25,17 @@ type Project struct {
 	IsPayed    bool
 	PayedEnded bool
 	MFAEnabled bool
+}
+
+type AccountData struct {
+	ProviderUserID string
+	Email          string
+	Name           string
+	Login          string
+	Password       string
+	AccessToken    string
+	RefreshToken   string
+	ExpiresAt      time.Time
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
 }

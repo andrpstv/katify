@@ -31,7 +31,12 @@ type AuthData struct {
 // }
 
 type AuthRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Email        string `json:email`
+	Username     string `json:"username"`
+	Password     string `json:"password"`
+	UserName     string `json:username`
+	Email        string `json:email`
+	PasswordHash string `json:password_hash`
+	FullName     string `json:fullname`
 	// CSRFToken string `json:"csrf_token"`
 }

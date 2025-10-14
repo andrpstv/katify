@@ -26,8 +26,6 @@ CREATE TABLE projects (
     UNIQUE (amo_workspace_id, getcourse_workspace_id)
 );
 
-CREATE INDEX idx_projects_account_id ON projects(account_id);
-
 -- +goose Down
 DROP INDEX IF EXISTS idx_projects_account_id;
 DROP TABLE IF EXISTS projects;

@@ -4,33 +4,38 @@ import (
 	"context"
 	"fmt"
 
-	domain "report/internal/domain/auth"
+	domain "report/internal/domain/user"
 	dto "report/internal/dto/auth"
-	portsMapper "report/internal/ports/outboundPorts/api/mapper"
-	portsParser "report/internal/ports/outboundPorts/api/parser"
-	portsClient "report/internal/ports/outboundPorts/api/services/amocrm/auth"
+	userRepo "report/internal/ports/outboundPorts/repositories/user"
+	tokenService "report/internal/ports/outboundPorts/token"
 )
 
 type AuthUseCaseImpl struct {
-	authClient portsClient.AuthClient
-	parser     portsParser.AuthParserService
-	mapper     portsMapper.AuthMapperService
+	userRepo     userRepo.UserRepository
+	tokenService tokenService.TokenService
 }
 
 func (a *AuthUseCaseImpl) Login(
 	ctx context.Context,
 	data *dto.AuthRequest,
-) (*domain.AccountData, error) {
-	resp, err := a.authClient.Login(ctx, data)
+) (*domain.TokenPair, error) {
+	user, err := a.userRepo.GetByEmail(ctx, data.Email)
 	if err != nil {
-		fmt.Errorf("can't authorize in account with creds", err)
+		return nil, fmt.Errorf("user not found. please register", err)
 	}
 
-	authData, err := a.parser.DecodeAuthData(resp)
+	tokenPair, err := a.tokenService.Generate(user.ID)
 	if err != nil {
-		return nil, fmt.Errorf("can't parse authdata:", err)
+		return nil, fmt.Errorf("can't generate token", err)
 	}
 
-	// дополнить запись в бд
-	return a.mapper.MapAuthDataToDomain(authData)
+	return tokenPair, err
+}
+
+func (a *AuthUseCaseImpl) Register(
+	ctx context.Context,
+	data *dto.AuthRequest,
+) (*domain.TokenPair, error) {
+	user := domain.User{}
+	error := a.userRepo.Create(ctx)
 }

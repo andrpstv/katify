@@ -18,6 +18,11 @@ CREATE TABLE accounts (
 
 CREATE INDEX idx_accounts_user_id ON accounts(user_id);
 
+INSERT INTO external_providers (service) VALUES 
+('amo'), 
+('getcourse'), 
+('bitrix');
+
 -- +goose Down
 DROP INDEX IF EXISTS idx_accounts_user_id;
 DROP TABLE IF EXISTS accounts;

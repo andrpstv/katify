@@ -1,7 +1,7 @@
 package ports
 
 import (
-	domain "report/internal/domain/auth"
+	domain "report/internal/domain/accounts"
 	dto "report/internal/dto/auth"
 )
 
