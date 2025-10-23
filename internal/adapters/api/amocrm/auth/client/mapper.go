@@ -3,8 +3,8 @@ package adapters
 import (
 	"fmt"
 
+	domainAuth "report/internal/domain/AuthUseCase"
 	domainAccount "report/internal/domain/accounts"
-	domainAuth "report/internal/domain/auth"
 	dto "report/internal/dto/auth"
 )
 

@@ -8,6 +8,6 @@ import (
 )
 
 type AuthUseCase interface {
-	Login(ctx context.Context, data *dto.AuthRequest) (*domain.TokenPair, error)
-	Register(ctx context.Context, data *dto.AuthRequest) (*domain.TokenPair, error)
+	Login(ctx context.Context, data *dto.AuthRequest) (*domain.UserData, error)
+	Register(ctx context.Context, data *dto.AuthRequest) (*domain.UserData, error)
 }

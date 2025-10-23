@@ -50,7 +50,7 @@ func (a *AmoAuthClientImpl) Login(
 ) (*http.Response, error) {
 	bodyBytes, err := json.Marshal(data)
 	if err != nil {
-		return nil, fmt.Errorf("error marshaling auth request: %w", err)
+		return nil, fmt.Errorf("error marshaling AuthUseCase request: %w", err)
 	}
 
 	resp, err := a.client.Post(

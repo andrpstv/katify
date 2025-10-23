@@ -52,7 +52,7 @@ func TestAmocrmLoginAndGetAccounts(t *testing.T) {
 	ctx := context.Background()
 
 	if err := authService.Init(ctx, username, password); err != nil {
-		t.Fatalf("failed to init auth service: %v", err)
+		t.Fatalf("failed to init AuthUseCase service: %v", err)
 	}
 	t.Logf("Login successful, token: %s...", authService.GetToken()[:20]) // только начало токена
 

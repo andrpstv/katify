@@ -3,7 +3,7 @@ package ports
 import (
 	"context"
 
-	domain "report/internal/domain/auth"
+	domain "report/internal/domain/AuthUseCase"
 	dto "report/internal/dto/auth"
 )
 

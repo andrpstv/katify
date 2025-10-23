@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	domain "report/internal/domain/auth"
+	domain "report/internal/domain/AuthUseCase"
 	dto "report/internal/dto/auth"
 	portsMapper "report/internal/ports/outboundPorts/api/mapper"
 	portsParser "report/internal/ports/outboundPorts/api/parser"

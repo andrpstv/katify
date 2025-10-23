@@ -76,13 +76,13 @@ func (p *AmoAuthParserServiceImpl) DecodeAuthData(
 	}
 
 	if authResp.AccessToken == "" {
-		return nil, fmt.Errorf("auth failed: no access_token found in cookies")
+		return nil, fmt.Errorf("AuthUseCase failed: no access_token found in cookies")
 	}
 	if authResp.ID == "" {
-		return nil, fmt.Errorf("auth failed: amo_user_id not found in cookies")
+		return nil, fmt.Errorf("AuthUseCase failed: amo_user_id not found in cookies")
 	}
 	if authResp.Email == "" {
-		return nil, fmt.Errorf("auth warning: amo_user_email not found in cookies")
+		return nil, fmt.Errorf("AuthUseCase warning: amo_user_email not found in cookies")
 	}
 
 	return authResp, nil

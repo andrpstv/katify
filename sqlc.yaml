@@ -1,11 +1,22 @@
 version: "2"
 sql:
-  - schema: "migrations"
-    queries: "sqlc/queries/auth"
+  # - schema: "migrations"
+  #   queries: "sqlc/queries/accounts.sql"
+  #   engine: "postgresql"
+  #   gen:
+  #     go:
+  #       out: "sqlc/repository/accounts"
+  #       package: "sqlc"
+  #       emit_json_tags: true
+  #       emit_interface: true
+  - schema:
+    - "migrations/0001_init_extension_and_users.up.sql"
+    - "migrations/0002_init_users_credentials.up.sql"
+    queries: "sqlc/queries/users.sql"
     engine: "postgresql"
     gen:
       go:
-        out: "sqlc/repository/auth"
+        out: "sqlc/repository/users"
         package: "sqlc"
         emit_json_tags: true
         emit_interface: true
