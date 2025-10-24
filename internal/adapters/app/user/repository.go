@@ -13,7 +13,13 @@ type UserRepositoryImpl struct {
 	Queries sqlc.Queries
 }
 
-func (a *UserRepositoryImpl) CreateUser(ctx context.Context, user *domain.User) (uuid.UUID, error) {
+func NewUserRepositoryImpl(queries sqlc.Queries) *UserRepositoryImpl {
+	return &UserRepositoryImpl{
+		Queries: queries,
+	}
+}
+
+func (a *UserRepositoryImpl) CreateUser(ctx context.Context, user *domain.User) (string, error) {
 	arg := sqlc.CreateUserParams{
 		ID:           toUUID(user.ID),
 		Username:     user.UserName,
@@ -26,10 +32,10 @@ func (a *UserRepositoryImpl) CreateUser(ctx context.Context, user *domain.User) 
 
 	id, err := a.Queries.CreateUser(ctx, arg)
 	if err != nil {
-		return uuid.Nil, err
+		return uuid.Nil.String(), err
 	}
 
-	return id, nil
+	return id.String(), nil
 }
 func (a *UserRepositoryImpl) GetUserByEmail(ctx context.Context, email string) (*domain.User, error) {
 	dbUser, err := a.Queries.GetUserByEmail(ctx, email)
@@ -50,8 +56,8 @@ func (a *UserRepositoryImpl) GetUserByEmail(ctx context.Context, email string) (
 
 	return user, nil
 }
-func (a *UserRepositoryImpl) GetUserByUserID(ctx context.Context, userID uuid.UUID) (*domain.User, error) {
-	dbUser, err := a.Queries.GetUserByUserID(ctx, userID)
+func (a *UserRepositoryImpl) GetUserByUserID(ctx context.Context, userID string) (*domain.User, error) {
+	dbUser, err := a.Queries.GetUserByUserID(ctx, toUUID(userID))
 	if err != nil {
 		return nil, err
 	}
@@ -86,22 +92,22 @@ func (a *UserRepositoryImpl) UpdateUser(ctx context.Context, user *domain.User) 
 	return nil
 }
 
-func (a *UserRepositoryImpl) GetTokensByUserId(ctx context.Context, userId uuid.UUID) (domain.UserCredentials, error) {
-	dbUserCreds, err := a.Queries.GetTokensByUserId(ctx, userId)
+func (a *UserRepositoryImpl) GetTokensByUserId(ctx context.Context, userId string) (*domain.UserCredentials, error) {
+	dbUserCreds, err := a.Queries.GetTokensByUserId(ctx, toUUID(userId))
 	if err != nil {
-		return domain.UserCredentials{}, err
+		return &domain.UserCredentials{}, err
 	}
 	user := &domain.UserCredentials{
 		AccessToken:  dbUserCreds.AccessToken,
 		RefreshToken: dbUserCreds.RefreshToken,
 		ExpiresAt:    dbUserCreds.ExpiresAt,
 	}
-	return *user, nil
+	return user, nil
 }
 
-func (a *UserRepositoryImpl) CreateTokensByUserId(ctx context.Context, userId uuid.UUID, userCreds *domain.UserCredentials) (string, error) {
+func (a *UserRepositoryImpl) CreateTokensByUserId(ctx context.Context, userId string, userCreds *domain.UserCredentials) (string, error) {
 	arg := sqlc.CreateTokensByUserIdParams{
-		UserID:       userId,
+		UserID:       toUUID(userId),
 		AccessToken:  userCreds.AccessToken,
 		RefreshToken: userCreds.RefreshToken,
 		ExpiresAt:    userCreds.ExpiresAt,
@@ -113,9 +119,9 @@ func (a *UserRepositoryImpl) CreateTokensByUserId(ctx context.Context, userId uu
 	return dbUserTokens.AccessToken, nil
 }
 
-func (a *UserRepositoryImpl) UpdateTokensByUserId(ctx context.Context, userId uuid.UUID, userCreds *domain.UserCredentials) error {
+func (a *UserRepositoryImpl) UpdateTokensByUserId(ctx context.Context, userId string, userCreds *domain.UserCredentials) error {
 	arg := sqlc.UpdateTokensByUserIdParams{
-		UserID:       userId,
+		UserID:       toUUID(userId),
 		AccessToken:  userCreds.AccessToken,
 		RefreshToken: userCreds.RefreshToken,
 		ExpiresAt:    userCreds.ExpiresAt,

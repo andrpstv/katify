@@ -10,9 +10,13 @@ import (
 type UserServiceImpl struct {
 }
 
+func NewUserServiceImpl() *UserServiceImpl {
+	return &UserServiceImpl{}
+}
+
 var jwtSecret = []byte("super_secret_key") // обычно берётся из .env
 
-func GenerateTokens(userID string) (*domain.UserCredentials, error) {
+func (a *UserServiceImpl) GenerateTokens(userID string) (*domain.UserCredentials, error) {
 	accessClaims := jwt.MapClaims{
 		"user_id": userID,
 		"exp":     time.Now().Add(15 * time.Minute).Unix(),

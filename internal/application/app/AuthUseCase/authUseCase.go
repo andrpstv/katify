@@ -14,6 +14,13 @@ type AuthUseCaseImpl struct {
 	userService user.UserService
 }
 
+func NewAuthUseCase(userRepo user.UserRepository, userService user.UserService) *AuthUseCaseImpl {
+	return &AuthUseCaseImpl{
+		userRepo:    userRepo,
+		userService: userService,
+	}
+}
+
 func (a *AuthUseCaseImpl) Login(
 	ctx context.Context,
 	data *dto.AuthRequest,
@@ -51,37 +58,41 @@ func (a *AuthUseCaseImpl) Register(
 ) (*domain.User, error) {
 	existingUser, err := a.userRepo.GetUserByEmail(ctx, data.Email)
 	if err == nil && existingUser != nil {
-		return nil, fmt.Errorf("user already exists")
+		return nil, fmt.Errorf("newUser already exists")
 	}
 
-	hashedPassword, err := existingUser.HashPassword(data.Password)
+	var tempUser domain.User
+	hashedPassword, err := tempUser.HashPassword(data.Password)
 	if err != nil {
 		return nil, fmt.Errorf("failed to hash password: %w", err)
 	}
 
-	user := domain.User{
-		Email:    data.Email,
-		Password: hashedPassword,
+	newUser := domain.User{
+		Email:        data.Email,
+		UserName:     data.UserName,
+		PasswordHash: hashedPassword,
+		FullName:     &data.FullName,
+		MfaEnabled:   nil,
 	}
 
-	_, err = a.userRepo.CreateUser(ctx, &user)
+	_, err = a.userRepo.CreateUser(ctx, &newUser)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create user: %w", err)
+		return nil, fmt.Errorf("failed to create newUser: %w", err)
 	}
 
-	userCreds, err := a.userService.GenerateTokens(user.ID)
+	userCreds, err := a.userService.GenerateTokens(newUser.ID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate tokens: %w", err)
 	}
 
-	_, err = a.userRepo.CreateTokensByUserId(ctx, user.ID, userCreds)
+	_, err = a.userRepo.CreateTokensByUserId(ctx, newUser.ID, userCreds)
 	if err != nil {
 		return nil, fmt.Errorf("failed to save tokens: %w", err)
 	}
 
 	userData := &domain.User{
-		ID:    user.ID,
-		Email: user.Email,
+		ID:    newUser.ID,
+		Email: newUser.Email,
 	}
 	return userData, nil
 }

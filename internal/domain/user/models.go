@@ -1,7 +1,6 @@
 package domain
 
 import (
-	"errors"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
@@ -26,9 +25,10 @@ func (u *User) HashPassword(password string) (string, error) {
 	return string(hashedPassword), nil
 }
 
-func (u *User) VerifyPassword(dtoPassword string) (bool, error) {
-	if dtoPassword == "" || dtoPassword != u.PasswordHash {
-		return false, errors.New("invalid password, try again")
+func (u *User) VerifyPassword(password string) (bool, error) {
+	err := bcrypt.CompareHashAndPassword([]byte(u.PasswordHash), []byte(password))
+	if err != nil {
+		return false, err
 	}
 	return true, nil
 }
