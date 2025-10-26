@@ -1,10 +1,10 @@
 -- +goose Up
-CREATE TABLE external_providers (
+CREATE TABLE IF NOT EXISTS external_providers (
 id SERIAL PRIMARY KEY,
 service TEXT UNIQUE NOT NULL
 );
 
-CREATE TABLE accounts (
+CREATE TABLE IF NOT EXISTS accounts (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     provider_id INT NOT NULL REFERENCES external_providers(id) ON DELETE RESTRICT,

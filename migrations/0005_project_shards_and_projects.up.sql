@@ -1,5 +1,5 @@
 -- +goose Up
-CREATE TABLE workspaces (
+CREATE TABLE IF NOT EXISTS workspaces (
 id BIGSERIAL PRIMARY KEY,
 account_id UUID NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
 uuid UUID DEFAULT gen_random_uuid(),
@@ -16,7 +16,7 @@ mfa_enabled BOOLEAN DEFAULT FALSE,
 created_at TIMESTAMP DEFAULT NOW(),
 updated_at TIMESTAMP DEFAULT NOW()
 );
-CREATE TABLE projects (
+CREATE TABLE IF NOT EXISTS projects (
     id BIGSERIAL PRIMARY KEY,
     amo_workspace_id BIGINT REFERENCES workspaces(id) ON DELETE CASCADE,
     getcourse_workspace_id BIGINT REFERENCES workspaces(id) ON DELETE CASCADE,

@@ -1,5 +1,5 @@
 -- +goose Up
-CREATE TABLE users_credentials (
+CREATE TABLE IF NOT EXISTS users_credentials (
 user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
 access_token TEXT NOT NULL,
 refresh_token TEXT NOT NULL,

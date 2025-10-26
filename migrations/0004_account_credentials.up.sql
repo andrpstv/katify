@@ -1,5 +1,5 @@
 -- +goose Up
-CREATE TABLE accounts_credentials (
+CREATE TABLE IF NOT EXISTS accounts_credentials (
 account_id UUID PRIMARY KEY REFERENCES accounts(id) ON DELETE CASCADE,
 access_token TEXT NOT NULL,
 refresh_token TEXT NOT NULL,

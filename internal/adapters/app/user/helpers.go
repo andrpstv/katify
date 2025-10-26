@@ -27,8 +27,12 @@ func toNullTime(t *time.Time) sql.NullTime {
 	}
 	return sql.NullTime{Valid: false}
 }
-func toUUID(t string) uuid.UUID {
-	return uuid.UUID{byte(len(t))}
+func toUUID(s string) uuid.UUID {
+	u, err := uuid.Parse(s)
+	if err != nil {
+		panic("invalid UUID string: " + s) // или вернуть ошибку по-другому
+	}
+	return u
 }
 func fromNullString(s sql.NullString) *string {
 	if s.Valid {

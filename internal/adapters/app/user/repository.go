@@ -20,8 +20,11 @@ func NewUserRepositoryImpl(queries sqlc.Queries) *UserRepositoryImpl {
 }
 
 func (a *UserRepositoryImpl) CreateUser(ctx context.Context, user *domain.User) (string, error) {
+	newUUID := uuid.New()
+	user.ID = newUUID.String()
+
 	arg := sqlc.CreateUserParams{
-		ID:           toUUID(user.ID),
+		ID:           newUUID,
 		Username:     user.UserName,
 		Email:        user.Email,
 		PasswordHash: user.PasswordHash,
