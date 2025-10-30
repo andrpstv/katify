@@ -1,8 +1,8 @@
 package application
 
 import (
-	accountsClient "report/internal/ports/outboundPorts/api/services/amocrm/accounts"
-	authClient "report/internal/ports/outboundPorts/api/services/amocrm/auth"
+	accountsClient "katify/internal/ports/outboundPorts/api/services/amocrm/accounts"
+	authClient "katify/internal/ports/outboundPorts/api/services/amocrm/auth"
 )
 
 type AmoAccountServiceImpl struct {

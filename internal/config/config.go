@@ -1,9 +1,9 @@
 package config
 
 import (
+	postgres "katify/internal/adapters/db"
+	"katify/pkg/logger"
 	"log"
-	postgres "report/internal/adapters/db"
-	"report/pkg/logger"
 	"time"
 
 	"github.com/joho/godotenv"
@@ -49,29 +49,17 @@ func readServerConfig() *ServerConfig {
 
 func readLoggerConfig() *logger.LoggerConfig {
 	loggerConfig := &logger.LoggerConfig{}
-	loggerConfig.LogLevel = GetOrDefaultEnv(LogLevel, "info")
+	loggerConfig.LogLevel = GetOrDefaultEnv(LogLevel, "debug")
 	return loggerConfig
 }
 
 func readPostgresConfig() *postgres.PostgresConfig {
-	appEnv := GetOrDefaultEnv(APP_ENV, "dev")
-
-	if appEnv == "prod" {
-		return &postgres.PostgresConfig{
-			Host:     GetOrDefaultEnv(PROD_DB_HOST, "localhost"),
-			Port:     GetOrDefaultEnv(PROD_DB_PORT, "5432"),
-			User:     GetOrDefaultEnv(PROD_DB_USER, "admin"),
-			Password: GetOrDefaultEnv(PROD_DB_PASSWORD, "pwd"),
-			Database: GetOrDefaultEnv(PROD_DB_NAME, "db"),
-		}
-	}
 
 	return &postgres.PostgresConfig{
-		Host:     GetOrDefaultEnv(DEV_DB_HOST, "localhost"),
-		Port:     GetOrDefaultEnv(DEV_DB_PORT, "5432"),
-		User:     GetOrDefaultEnv(DEV_DB_USER, "admin"),
-		Password: GetOrDefaultEnv(DEV_DB_PASSWORD, "pwd"),
-		Database: GetOrDefaultEnv(DEV_DB_NAME, "db"),
+		Host:     GetOrDefaultEnv(DB_HOST, "64.188.97.71"),
+		Port:     GetOrDefaultEnv(DB_PORT, "5432"),
+		User:     GetOrDefaultEnv(DB_USER, "dev_user"),
+		Password: GetOrDefaultEnv(DB_PASSWORD, "dev_pass"),
+		Database: GetOrDefaultEnv(DB_NAME, "katify_dev"),
 	}
-
 }

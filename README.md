@@ -50,7 +50,7 @@ Report Parser - это backend-сервис, разработанный на Go,
 ### 1. Клонирование репозитория
 ```bash
 git clone <repository-url>
-cd report_parser
+cd katify
 ```
 
 ### 2. Установка зависимостей
@@ -88,7 +88,7 @@ TELEGRAM_API_TOKEN=your_telegram_bot_token
 
 ### 6. Запуск сервера
 ```bash
-go run cmd/bot/main.go
+go run cmd/app/main.go
 ```
 
 Сервер будет доступен по адресу `http://localhost:8080`

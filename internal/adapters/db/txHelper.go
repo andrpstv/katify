@@ -3,9 +3,9 @@ package postgres
 import (
 	"context"
 	"database/sql"
-	"report/internal/adapters/app/user"
-	userPort "report/internal/ports/outboundPorts/app/user"
-	sqlc "report/sqlc/repository/users"
+	"katify/internal/adapters/app/user"
+	userPort "katify/internal/ports/outboundPorts/app/user"
+	sqlc "katify/sqlc/repository/users"
 )
 
 type TxManager interface {

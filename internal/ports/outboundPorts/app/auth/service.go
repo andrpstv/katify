@@ -1,7 +1,7 @@
 package ports
 
 import (
-	domain "report/internal/domain/user"
+	domain "katify/internal/domain/user"
 )
 
 type AuthService interface {

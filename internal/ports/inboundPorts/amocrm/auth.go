@@ -3,8 +3,8 @@ package ports
 import (
 	"context"
 
-	domain "report/internal/domain/AuthUseCase"
-	dto "report/internal/dto/auth"
+	domain "katify/internal/domain/AuthUseCase"
+	dto "katify/internal/dto/auth"
 )
 
 type AuthUseCase interface {

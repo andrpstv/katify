@@ -1,8 +1,8 @@
 package ports
 
 import (
-	domain "report/internal/domain/accounts"
-	dto "report/internal/dto/auth"
+	domain "katify/internal/domain/accounts"
+	dto "katify/internal/dto/auth"
 )
 
 type AuthMapperService interface {

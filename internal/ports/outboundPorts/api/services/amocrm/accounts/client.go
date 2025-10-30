@@ -3,7 +3,7 @@ package ports
 import (
 	"context"
 
-	domain "report/internal/domain/accounts"
+	domain "katify/internal/domain/accounts"
 )
 
 type AmoAccountClient interface {

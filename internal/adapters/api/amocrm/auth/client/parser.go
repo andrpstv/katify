@@ -11,7 +11,7 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 
-	dto "report/internal/dto/auth"
+	dto "katify/internal/dto/auth"
 )
 
 type AmoAuthParserServiceImpl struct{}

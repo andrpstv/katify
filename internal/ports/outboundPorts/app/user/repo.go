@@ -3,7 +3,7 @@ package user
 import (
 	"context"
 
-	domain "report/internal/domain/user"
+	domain "katify/internal/domain/user"
 )
 
 type UserRepository interface {

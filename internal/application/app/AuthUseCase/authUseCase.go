@@ -3,10 +3,10 @@ package authUseCase
 import (
 	"context"
 	"fmt"
-	postgres "report/internal/adapters/db"
-	domain "report/internal/domain/user"
-	dto "report/internal/dto/auth"
-	"report/internal/ports/outboundPorts/app/user"
+	postgres "katify/internal/adapters/db"
+	domain "katify/internal/domain/user"
+	dto "katify/internal/dto/auth"
+	"katify/internal/ports/outboundPorts/app/user"
 )
 
 type AuthUseCaseImpl struct {

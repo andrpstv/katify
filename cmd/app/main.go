@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"report/internal/adapters/server"
-	"report/internal/config"
-	"report/pkg/logger"
+	"katify/internal/adapters/server"
+	"katify/internal/config"
+	"katify/pkg/logger"
 
 	_ "github.com/lib/pq"
 )

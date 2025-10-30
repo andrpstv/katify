@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 
-	domain "report/internal/domain/AuthUseCase"
-	dto "report/internal/dto/auth"
-	portsMapper "report/internal/ports/outboundPorts/api/mapper"
-	portsParser "report/internal/ports/outboundPorts/api/parser"
-	portsClient "report/internal/ports/outboundPorts/api/services/amocrm/auth"
+	domain "katify/internal/domain/AuthUseCase"
+	dto "katify/internal/dto/auth"
+	portsMapper "katify/internal/ports/outboundPorts/api/mapper"
+	portsParser "katify/internal/ports/outboundPorts/api/parser"
+	portsClient "katify/internal/ports/outboundPorts/api/services/amocrm/auth"
 )
 
 type AuthUseCaseImpl struct {
