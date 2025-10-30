@@ -1,7 +1,7 @@
 package user
 
 import (
-	domain "report/internal/domain/user"
+	domain "katify/internal/domain/user"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"

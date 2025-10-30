@@ -12,9 +12,9 @@ import (
 
 	"github.com/joho/godotenv"
 
-	"report/internal/adapters/amocrm/auth"
-	"report/internal/adapters/amocrm/client"
-	"report/internal/adapters/amocrm/services/accounts"
+	"katify/internal/adapters/amocrm/auth"
+	"katify/internal/adapters/amocrm/client"
+	"katify/internal/adapters/amocrm/services/accounts"
 )
 
 func TestAmocrmLoginAndGetAccounts(t *testing.T) {

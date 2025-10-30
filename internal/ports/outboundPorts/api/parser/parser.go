@@ -3,8 +3,8 @@ package ports
 import (
 	"net/http"
 
-	domain "report/internal/domain/accounts"
-	dto "report/internal/dto/auth"
+	domain "katify/internal/domain/accounts"
+	dto "katify/internal/dto/auth"
 )
 
 type AuthParserService interface {

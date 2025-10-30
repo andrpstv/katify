@@ -3,9 +3,9 @@ package adapters
 import (
 	"fmt"
 
-	domainAuth "report/internal/domain/AuthUseCase"
-	domainAccount "report/internal/domain/accounts"
-	dto "report/internal/dto/auth"
+	domainAuth "katify/internal/domain/AuthUseCase"
+	domainAccount "katify/internal/domain/accounts"
+	dto "katify/internal/dto/auth"
 )
 
 type AmoAuthMapperServiceImpl struct{}

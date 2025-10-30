@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
-	domain "report/internal/domain/accounts"
-	dto "report/internal/dto/accounts"
+	domain "katify/internal/domain/accounts"
+	dto "katify/internal/dto/accounts"
 )
 
 type AccountParserServiceImpl struct{}

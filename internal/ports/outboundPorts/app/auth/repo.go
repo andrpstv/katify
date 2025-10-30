@@ -3,7 +3,7 @@ package ports
 import (
 	"context"
 
-	domain "report/internal/domain/user"
+	domain "katify/internal/domain/user"
 )
 
 type AuthRepository interface {

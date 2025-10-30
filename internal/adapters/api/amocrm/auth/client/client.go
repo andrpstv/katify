@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"net/http"
 
-	dto "report/internal/dto/auth"
-	portsClient "report/internal/ports/outboundPorts/api/client"
-	portsMapper "report/internal/ports/outboundPorts/api/mapper"
-	portsParser "report/internal/ports/outboundPorts/api/parser"
+	dto "katify/internal/dto/auth"
+	portsClient "katify/internal/ports/outboundPorts/api/client"
+	portsMapper "katify/internal/ports/outboundPorts/api/mapper"
+	portsParser "katify/internal/ports/outboundPorts/api/parser"
 )
 
 type AmoAuthClientImpl struct {

@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"net/http"
 
-	domain "report/internal/domain/accounts"
-	portsClient "report/internal/ports/outboundPorts/api/client"
-	portsParser "report/internal/ports/outboundPorts/api/parser"
+	domain "katify/internal/domain/accounts"
+	portsClient "katify/internal/ports/outboundPorts/api/client"
+	portsParser "katify/internal/ports/outboundPorts/api/parser"
 )
 
 type AmoAccountClientImpl struct {

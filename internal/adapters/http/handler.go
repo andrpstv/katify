@@ -3,8 +3,8 @@ package http
 import (
 	"net/http"
 
-	authUseCase "report/internal/application/app/AuthUseCase"
-	dto "report/internal/dto/auth"
+	authUseCase "katify/internal/application/app/AuthUseCase"
+	dto "katify/internal/dto/auth"
 
 	"github.com/gin-gonic/gin"
 )

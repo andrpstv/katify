@@ -1,4 +1,4 @@
-module report
+module katify
 
 go 1.24.3
 

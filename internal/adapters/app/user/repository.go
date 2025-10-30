@@ -5,8 +5,8 @@ import (
 
 	"github.com/google/uuid"
 
-	domain "report/internal/domain/user"
-	sqlc "report/sqlc/repository/users"
+	domain "katify/internal/domain/user"
+	sqlc "katify/sqlc/repository/users"
 )
 
 type UserRepositoryImpl struct {
