@@ -11,7 +11,7 @@ services:
       - traefik.http.routers.katify-dev.rule=Host(`dev.katify.ru`) && PathPrefix(`/api`)
       - traefik.http.routers.katify-dev.entrypoints=websecure
       - traefik.http.routers.katify-dev.tls.certresolver=letsencrypt
-      - traefik.http.services.katify-dev.loadbalancer.server.port=8000
+      - traefik.http.services.katify-dev.loadbalancer.server.port=9000
     networks:
       - traefik-proxy
 
