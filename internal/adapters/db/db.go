@@ -22,7 +22,7 @@ type PostgresConfig struct {
 }
 
 func NewPostgresClient(cfg *PostgresConfig, log logger.Logger) (*sql.DB, error) {
-	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=require",
+	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		cfg.Host, cfg.Port, cfg.User, cfg.Password, cfg.Database)
 
 	log.Infof("[Postgres] Attempting to connect, connStr=%s", connStr)
