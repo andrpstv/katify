@@ -42,8 +42,10 @@ type ServerConfig struct {
 
 func readServerConfig() *ServerConfig {
 	return &ServerConfig{
-		HTTPPort: GetOrDefaultEnv(HTTPPort, ":8080"),
-		APIVer:   GetOrDefaultEnv(APIVer, "/api/v1"),
+		HTTPPort:     GetOrDefaultEnv(HTTPPort, ":9000"),
+		APIVer:       GetOrDefaultEnv(APIVer, "/api/v1"),
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
 	}
 }
 
