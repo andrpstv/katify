@@ -14,6 +14,7 @@ WORKDIR /app
 
 COPY --from=BUILDER /app/server .
 COPY --from=BUILDER /app/migrations ./migrations
+COPY --from=BUILDER /app/.env .
 
 EXPOSE 9000
 CMD ["./server"]
