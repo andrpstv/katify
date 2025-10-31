@@ -4,16 +4,14 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    ports:
-      - "8000:8000"
     env_file:
       - .env
     labels:
       - traefik.enable=true
-      - traefik.http.routers.katify-dev.rule=Host(`dev.katify.ru`)
+      - traefik.http.routers.katify-dev.rule=Host(`dev.katify.ru`) && PathPrefix(`/api`)
       - traefik.http.routers.katify-dev.entrypoints=websecure
       - traefik.http.routers.katify-dev.tls.certresolver=letsencrypt
-      - traefik.http.services.katify-dev.loadbalancer.server.port=8000
+      - traefik.http.services.katify-dev.loadbalancer.server.port=9000
     networks:
       - traefik-proxy
 
