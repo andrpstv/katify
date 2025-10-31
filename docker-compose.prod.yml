@@ -1,41 +1,17 @@
 version: '3.9'
-
 services:
-  postgres-prod:
-    image: postgres
-    ports:
-      - "5435:5432"
-    volumes:
-      - pg_data_prod:/var/lib/postgresql/data
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: katify_prod
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready"]
-      interval: 30s
-      timeout: 60s
-      retries: 5
-      start_period: 80s
-    networks:
-      - traefik-proxy
-
-  katify:
+  katify-prod:
     build:
       context: .
       dockerfile: Dockerfile
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.katify.rule=Host(`katify.ru`)"
-      - "traefik.http.routers.katify.entrypoints=https"
-      - "traefik.http.routers.katify.tls=true"
-      - "traefik.http.routers.katify.tls.certresolver=letsencrypt"
-      - "traefik.http.services.katify.loadbalancer.server.port=9000"
     env_file:
-      - .env.prod
-    depends_on:
-      postgres-prod:
-        condition: service_healthy
+      - .env
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.katify-prod.rule=Host(`katify.ru`) && PathPrefix(`/api`)
+      - traefik.http.routers.katify-prod.entrypoints=websecure
+      - traefik.http.routers.katify-prod.tls.certresolver=letsencrypt
+      - traefik.http.services.katify-prod.loadbalancer.server.port=9000
     networks:
       - traefik-proxy
 
