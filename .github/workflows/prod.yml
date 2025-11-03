@@ -30,4 +30,4 @@ jobs:
       - name: Получение сертификата
         run: op read ${{secrets.DB_CRT_PATH}} -o root.crt
       - name: Запуск
-        run: docker-compose -f docker-compose.prod.yml up -d --build
+        run: docker compose -f docker-compose.prod.yml up -d --build

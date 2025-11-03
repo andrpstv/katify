@@ -28,4 +28,4 @@ jobs:
           echo "TELEGRAM_API_TOKEN=${{ secrets.DEV_TELEGRAM_API_TOKEN }}" >> .env
 
       - name: Run Docker Compose
-        run: docker-compose -f docker-compose.dev.yml up -d --build
+        run: docker compose -f docker-compose.dev.yml up -d --build
