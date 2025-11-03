@@ -1,0 +1,33 @@
+name: Production Workflow
+on:
+  push:
+    branches:
+      - master
+jobs:
+  build:
+    runs-on: self-hosted
+    env:
+      OP_SERVICE_ACCOUNT_TOKEN: ${{secrets.SERVICE_CODE}}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Generate .env from Secrets
+        run: |
+          echo "AMOCRM_ACCOUNTS=${{ secrets.PROD_AMOCRM_ACCOUNTS }}" >> .env
+          echo "AMOCRM_BASEURL=${{ secrets.PROD_AMOCRM_BASEURL }}" >> .env
+          echo "AMOCRM_CALLSTATS=${{ secrets.PROD_AMOCRM_CALLSTATS }}" >> .env
+          echo "AMOCRM_URL=${{ secrets.PROD_AMOCRM_URL }}" >> .env
+          echo "AMO_LOGIN=${{ secrets.PROD_AMO_LOGIN }}" >> .env
+          echo "AMO_PASSWORD=${{ secrets.PROD_AMO_PASSWORD }}" >> .env
+          echo "APP_ENV=${{ secrets.PROD_APP_ENV }}" >> .env
+          echo "DB_HOST=${{ secrets.PROD_DB_HOST }}" >> .env
+          echo "DB_NAME=${{ secrets.PROD_DB_NAME }}" >> .env
+          echo "DB_PASSWORD=${{ secrets.PROD_DB_PASSWORD }}" >> .env
+          echo "DB_PORT=${{ secrets.PROD_DB_PORT }}" >> .env
+          echo "DB_USER=${{ secrets.PROD_DB_USER }}" >> .env
+          echo "TELEGRAM_API_TOKEN=${{ secrets.PROD_TELEGRAM_API_TOKEN }}" >> .env
+          echo "HTTP_PORT=${{ secrets.PROD_HTTP_PORT }}" >> .env
+      
+      - name: Получение сертификата
+        run: op read ${{secrets.DB_CRT_PATH}} -o root.crt
+      - name: Запуск
+        run: docker compose -f docker-compose.prod.yml up -d --build
