@@ -6,8 +6,7 @@ on:
 jobs:
   build:
     runs-on: self-hosted
-    env:
-      OP_SERVICE_ACCOUNT_TOKEN: ${{secrets.SERVICE_CODE}}
+    environment: prod
     steps:
       - uses: actions/checkout@v3
       - name: Generate .env from Secrets
@@ -26,6 +25,5 @@ jobs:
           echo "DB_USER=${{ secrets.PROD_DB_USER }}" >> .env
           echo "TELEGRAM_API_TOKEN=${{ secrets.PROD_TELEGRAM_API_TOKEN }}" >> .env
           echo "HTTP_PORT=${{ secrets.PROD_HTTP_PORT }}" >> .env
-      
       - name: Run Docker Compose
         run: docker compose -f docker-compose.prod.yml up -d --build
